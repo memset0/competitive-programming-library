@@ -1,8 +1,8 @@
-#include <chrono>
-#include <random>
-
 #ifndef MEM_RANDOM_H
 #define MEM_RANDOM_H
+
+#include <chrono>
+#include <random>
 
 const int LuckyNumber = 0726; // It's Kanbe Kotori's birthday!
 std::mt19937 rng(LuckyNumber ^ std::chrono::steady_clock::now().time_since_epoch().count());

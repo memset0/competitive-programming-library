@@ -1,11 +1,10 @@
-#include <cmath>
-#include <cstdio>
-#include <string>
-
 #ifndef MEM_IO_H
 #define MEM_IO_H
 
 #include "global.hpp"
+#include <cmath>
+#include <cstdio>
+#include <string>
 
 // forked from mcfx's code
 
@@ -283,5 +282,6 @@ struct Cp {
 
 FastRead<Cg> in;
 FastWrite<Cp> out;
+const char dl = '\n';
 
 #endif

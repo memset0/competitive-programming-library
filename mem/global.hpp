@@ -1,7 +1,7 @@
-#include<iostream>
-
 #ifndef MEM_GLOBAL_H
 #define MEM_GLOBAL_H
+
+#include <iostream>
 
 // short stl
 #define xx first
@@ -22,9 +22,9 @@ typedef __uint128_t ulll;
 #endif
 
 // utils
+using std::cerr;
 using std::cin;
 using std::cout;
-using std::cerr;
 using std::endl;
 
 #endif

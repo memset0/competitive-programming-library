@@ -1,5 +1,5 @@
-#ifndef MEM_Modulus_H
-#define MEM_Modulus_H
+#ifndef MEM_MODINT_H
+#define MEM_MODINT_H
 
 #include "math.hpp"
 

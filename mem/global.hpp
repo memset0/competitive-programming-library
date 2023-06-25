@@ -1,5 +1,8 @@
 #include<iostream>
 
+#ifndef MEM_GLOBAL_H
+#define MEM_GLOBAL_H
+
 // short stl
 #define xx first
 #define yy second
@@ -21,3 +24,5 @@ using std::cin;
 using std::cout;
 using std::cerr;
 using std::endl;
+
+#endif

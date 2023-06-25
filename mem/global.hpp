@@ -14,6 +14,8 @@
 // type
 typedef long long ll;
 typedef unsigned long long ull;
+typedef double lf;
+typedef long double llf;
 #ifdef __SIZEOF_INT128__
 typedef __int128_t lll;
 typedef __uint128_t ulll;

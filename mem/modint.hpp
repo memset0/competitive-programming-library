@@ -41,4 +41,6 @@ template <const int mod> void init_factorial(int n, Modulus<mod> *fac, Modulus<m
     fac[i] = fac[i - 1] * i, ifac[i] = ifac[i - 1] * ifac[i];
 }
 
+#define Modulus ModInt
+
 #endif

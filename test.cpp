@@ -16,7 +16,7 @@ int main() {
   while (T--) {
     std::string name;
     in, name;
-    cerr << "[" << name << "]" << endl;
+    out, "[", name.c_str(), "]", dl;
     if (name == "basic_io") {
       int a;
       long long b;

@@ -48,12 +48,7 @@ struct barrett {
   unsigned int mul(unsigned int a, unsigned int b) const {
     unsigned long long z = a;
     z *= b;
-#ifdef _MSC_VER
-    unsigned long long x;
-    _umul128(z, im, &x);
-#else
     unsigned long long x = (unsigned long long)(((unsigned __int128)(z)*im) >> 64);
-#endif
     unsigned long long y = x * _m;
     return (unsigned int)(z - y + (z < y ? _m : 0));
   }

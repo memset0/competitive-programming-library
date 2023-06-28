@@ -1,8 +1,4 @@
-#include "mem/global.hpp"
-#include "mem/io.hpp"
-#include "mem/math.hpp"
-#include "mem/modint.hpp"
-#include "mem/random.hpp"
+#include "mem.hpp"
 #include <bits/stdc++.h>
 
 const int mod = 998244353;

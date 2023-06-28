@@ -3,23 +3,31 @@
 
 #include <iostream>
 
+// optimize
+#define OP operator
+#define TT template <class T>
+#define IL __attribute__((always_inline)) inline
+
 // short stl
 #define xx first
 #define yy second
 #define pb push_back
 #define eb emplace_back
-#define pii std::pair<int, int>
 #define mp(a, b) std::make_pair(a, b)
 
 // type
+typedef unsigned int uint;
 typedef long long ll;
 typedef unsigned long long ull;
 typedef double lf;
 typedef long double llf;
+
 #ifdef __SIZEOF_INT128__
 typedef __int128_t lll;
 typedef __uint128_t ulll;
 #endif
+
+typedef std::pair<int, int> pii;
 
 // utils
 using std::cerr;

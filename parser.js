@@ -1,10 +1,25 @@
-const fs = require('fs');
-const path = require('path');
-
 const header_root = __dirname;
 const line_limit = 120;
+const copyrights = `
+/**
+ *    author:   memset0
+ *    date:     ${Date()}
+ *    blog:     https://mem.ac/
+ *    library:  https://github.com/memset0/competitive-programming-library
+**/
+`.trim();
 const endl = '\n';
 const chunks = [];
+
+function _readHeaderFile(file) {
+	const fs = require('fs');
+	const path = require('path');
+	return fs.readFileSync(path.join(header_root, file)).toString();
+}
+
+String.prototype.replace = function (find, replace) {
+	return this.replace(new RegExp(find.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), replace);
+}
 
 String.prototype.isSpace = function () {
 	return this == ' ' || this == '\t' || this == '\n' || this == '\r' || this == '\v' || this == '\f';
@@ -32,36 +47,20 @@ process.stdin.on('data', (chunk) => {
 
 process.stdin.on('end', () => {
 	const input = Buffer.concat(chunks).toString('utf8');
-	console.log(parse(input));
+	console.log(parse(input, _readHeaderFile));
 });
 
-function parse(source) {
-	let copyrights = '';
+function parse(source, readHeaderFile) {
 	let headers = '';
 	let body = '';
 
 	const included = {};
 
-	function compress(str) {
+	function $compress(str) {
 		const patternS = "R\"(";
 		const patternT = ")\"";
-		const trigraphs = {
-			'=': '#',
-			'/': '\\',
-			'\'': '^',
-			'(': '[',
-			')': ']',
-			'<': '{',
-			'>': '}',
-			'!': '|',
-			'-': '~'
-		};
-
-		function check(a, b) {
-			return (a.isIdentifierPart() && b.isIdentifierPart()) ||
-				((a == ' + ' || a == '-') && a == b) ||
-				(a == '/' && b == '*');
-		}
+		const trigraphs = { '=': '#', '/': '\\', '\'': '^', '(': '[', ')': ']', '<': '{', '>': '}', '!': '|', '-': '~' };
+		function check(a, b) { return (a.isIdentifierPart() && b.isIdentifierPart()) || ((a == ' + ' || a == '-') && a == b) || (a == '/' && b == '*'); }
 
 		function processTrigraph(str) {
 			for (const ch in trigraphs) {
@@ -218,13 +217,29 @@ function parse(source) {
 		return ret;
 	}
 
+	function compress(str, file) {
+		str = $compress(str);
+		if (included['mem/global.hpp'] && file != 'mem/global.hpp') {
+			str = str.replaceAll('unsigned long long', ' ull ');
+			str = str.replaceAll('long long', ' ll ');
+			str = str.replaceAll('unsigned int', ' uint ');
+			str = str.replaceAll('long double', ' llf ');
+			str = str.replaceAll('double', ' lf ');
+			str = str.replaceAll('inline', ' IL ');
+			str = str.replaceAll('operator', ' OP ');
+			str = str.replaceAll('template<typename T>', ' TT ');
+		}
+		return $compress(str);
+	}
+
 	function parseHeader(file) {
+		file = file.replaceAll('\\', '/');
 		if (included[file]) {
 			return;
 		}
 		included[file] = true;
 
-		const source = fs.readFileSync(path.join(header_root, file)).toString();
+		const source = readHeaderFile(file);
 		const program = [''];
 		let still_in_define = false;
 		for (let line of source.split('\n')) {
@@ -232,7 +247,21 @@ function parse(source) {
 				const name = line.slice(8).trim();
 				if ((name.startsWith('"') && name.endsWith('"')) || (name.startsWith('<mem/') && name.endsWith('>'))) {
 					const filename = name.slice(1, -1);
-					parseHeader(path.join(path.dirname(file), filename));
+					const path = file.split('/');
+					path.pop();
+					while (filename.startsWith('.')) {
+						if (!filename.includes('/')) { break; }
+						let k = filename.match('/').index;
+						while (k && filename[k - 1] == '.') --k;
+						if (!k) {
+							for (let _ = filename.match('/').index - 1; path.length && _--;) { path.pop(); }
+						} else {
+							break;
+						}
+						filename = filename.slice(filename.match('/').index + 1);
+					}
+					path.push(filename);
+					parseHeader(path.join('/'));
 				}
 			} else if (line.startsWith('#') || still_in_define) {
 				const line_filtered = line.endsWith('\\') ? line.slice(0, line.length - 1) : line;
@@ -269,39 +298,47 @@ function parse(source) {
 		if (!program[program.length - 1]) {
 			program.pop();
 		}
-		for (let i = 0; i < program.length; i++)
-			if (!program[i].startsWith('#')) {
-				const code = compress(program[i]);
-				if (code.length > line_limit) {
-					program[i] = '';
-					for (let j = 0; true; j += line_limit - 1) {
-						if (code.length - j <= line_limit) {
-							program[i] += code.slice(j, code.length);
-							break;
-						} else {
-							program[i] += code.slice(j, j + line_limit - 1) + '\\' + endl;
-						}
+		for (let i = 0; i < program.length; i++) {
+			const code = compress(program[i], file);
+			if (code.length > line_limit) {
+				program[i] = '';
+				for (let j = 0; true; j += line_limit - 1) {
+					if (code.length - j <= line_limit) {
+						program[i] += code.slice(j, code.length);
+						break;
+					} else {
+						program[i] += code.slice(j, j + line_limit - 1) + '\\' + endl;
 					}
-				} else {
-					program[i] = code;
 				}
+			} else {
+				program[i] = code;
 			}
+		}
 
-		console.error(program);
-		headers += program.join(endl) + endl + endl;
+		if (program[0].startsWith('#ifndef') && program[1].startsWith('#define') && program[program.length - 1].startsWith('#endif')) {
+			// qualified header
+			program.shift();
+			program.shift();
+			program.pop();
+		}
+
+		// console.error(program);
+		if (program.length) {
+			headers += '// ' + file + endl + program.join(endl) + endl;
+		}
 	}
 
-	headers += '#include<bits/stdc++.h>' + endl + endl;
+	headers += '#include<bits/stdc++.h>' + endl;
 	for (const line of source.split('\n')) {
 		if (line.startsWith('#include')) {
 			const name = line.slice(8).trim();
 			if ((name.startsWith('"') && name.endsWith('"')) || (name.startsWith('<mem/') && name.endsWith('>'))) {
-				parseHeader(path.join('.', name.slice(1, -1)));
+				parseHeader(name.slice(1, -1));
 			}
 		} else {
 			body += line + endl;
 		}
 	}
 
-	return copyrights + headers + body;
+	return copyrights.replaceAll('\n', endl) + endl + headers + body;
 }

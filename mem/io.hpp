@@ -119,6 +119,7 @@ template <typename T> struct FastRead {
     return *this;
   }
   inline FastRead &operator,(std::string &x) {
+    x = "";
     char t = P();
     for (; IS(t) && ~t; t = P())
       ;
@@ -198,6 +199,7 @@ template <typename T> struct FastWrite {
     while (*x) P(*x++);
     return *this;
   }
+  inline FastWrite &operator,(const std::string &x) { return this->operator,(x.c_str()); }
   inline FastWrite &operator,(const Fwp &x) {
     p = x.p;
     return *this;

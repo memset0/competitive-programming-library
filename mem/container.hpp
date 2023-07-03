@@ -15,4 +15,6 @@ using std::tuple;
 using std::unordered_map;
 using std::unordered_set;
 
+using std::vector; // temporarily using standard vector
+
 #endif

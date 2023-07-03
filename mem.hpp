@@ -5,6 +5,7 @@
 
 #include "mem/bit.hpp"
 #include "mem/container.hpp"
+#include "mem/geo.hpp"
 #include "mem/io.hpp"
 #include "mem/math.hpp"
 #include "mem/modint.hpp"

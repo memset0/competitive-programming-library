@@ -35,4 +35,8 @@ using std::cin;
 using std::cout;
 using std::endl;
 
+// fast coding
+#define rep(i, l, r) for (int i = (l), i##end = (r); i <= i##end; i++)
+#define per(i, l, r) for (int i = (l), i##end = (r); i >= i##end; i--)
+
 #endif

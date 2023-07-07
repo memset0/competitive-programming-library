@@ -1,3 +1,6 @@
+node_modules
+mem/thirdparty
+package-lock.json
 test-expand.cpp
 
 # Prerequisites

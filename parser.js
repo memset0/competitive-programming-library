@@ -1,4 +1,3 @@
-const header_root = __dirname;
 const line_limit = 120;
 const copyrights = `
 /**
@@ -9,13 +8,6 @@ const copyrights = `
 **/
 `.trim();
 const endl = '\n';
-const chunks = [];
-
-function _readHeaderFile(file) {
-	const fs = require('fs');
-	const path = require('path');
-	return fs.readFileSync(path.join(header_root, file)).toString();
-}
 
 String.prototype.replace = function (find, replace) {
 	return this.replace(new RegExp(find.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), replace);
@@ -40,15 +32,6 @@ String.prototype.safeIndexOf = function (ch, ind) {
 	}
 	return -1;
 }
-
-process.stdin.on('data', (chunk) => {
-	chunks.push(chunk);
-});
-
-process.stdin.on('end', () => {
-	const input = Buffer.concat(chunks).toString('utf8');
-	console.log(parse(input, _readHeaderFile));
-});
 
 function parse(source, readHeaderFile) {
 	let headers = '';
@@ -342,3 +325,5 @@ function parse(source, readHeaderFile) {
 
 	return copyrights.replaceAll('\n', endl) + endl + headers + body;
 }
+
+module.exports = parse;
